@@ -75,10 +75,14 @@ NEXT_PUBLIC_APP_URL=http://127.0.0.1:3456
 
 If you edit the sheet directly, use **lowercase** `type` (`idea` or `challenge`) and `status` (`active` or `hidden`). Each row needs a unique `id` (UUID), plus `title`, `details`, and `votes` (numeric; non-numeric values are treated as `0`). `submitter_name` is optional but shown on phone item detail only.
 
+## Deploy & access (beginner guide)
+
+New to hosting? Read **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** — it explains where to put the app (recommended: Vercel), how to connect Google Sheets, and how the office TV and phones open it.
+
 ## Office TV setup
 
-1. Deploy or run the app on a machine reachable on your network (or the internet).
-2. Set `NEXT_PUBLIC_APP_URL` to the URL employees will use on their phones.
+1. Deploy or run the app on a machine reachable on your network (or the internet). See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+2. Set `NEXT_PUBLIC_APP_URL` to the URL employees will use on their phones, then redeploy.
 3. On the TV browser, open `/display` (e.g. `https://your-host/display`) and go **fullscreen**.
 4. The board refreshes about every 15 seconds; the side panel shows a QR code linking to the phone UI.
 
