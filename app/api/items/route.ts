@@ -5,7 +5,16 @@ import type { ItemType } from "@/lib/types";
 export async function GET() {
   try {
     const items = await getStore().listActive();
-    return NextResponse.json({ items });
+    const itemsPublic = items.map((item) => ({
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      details: item.details,
+      votes: item.votes,
+      createdAt: item.createdAt,
+      status: item.status,
+    }));
+    return NextResponse.json({ items: itemsPublic });
   } catch {
     return NextResponse.json({ error: "Failed to load items" }, { status: 500 });
   }

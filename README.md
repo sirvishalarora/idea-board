@@ -61,7 +61,9 @@ Copy `.env.example` to `.env.local` and set:
 | `GOOGLE_SHEET_ID` | Spreadsheet ID from the sheet URL |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Service account `client_email` |
 | `GOOGLE_PRIVATE_KEY` | Service account `private_key` (keep quotes; `\n` newlines are fine) |
-| `NEXT_PUBLIC_APP_URL` | Public URL phones use to open the app (required for the QR code in production) |
+| `NEXT_PUBLIC_APP_URL` | Optional public URL for the QR code (see below) |
+
+`NEXT_PUBLIC_*` variables are embedded at **build time** in Next.js. Set them before `npm run build` (or restart `npm run dev` after changing them locally). On the TV `/display` page, if this is unset, the QR code uses the browser’s current origin (`window.location.origin`), so scanning works on your LAN without hard-coding `127.0.0.1`.
 
 Example for local dev:
 
@@ -69,7 +71,9 @@ Example for local dev:
 NEXT_PUBLIC_APP_URL=http://127.0.0.1:3456
 ```
 
-Restart the dev server after changing env vars.
+### Manual rows in `items`
+
+If you edit the sheet directly, use **lowercase** `type` (`idea` or `challenge`) and `status` (`active` or `hidden`). Each row needs a unique `id` (UUID), plus `title`, `details`, and `votes` (numeric; non-numeric values are treated as `0`). `submitter_name` is optional but shown on phone item detail only.
 
 ## Office TV setup
 

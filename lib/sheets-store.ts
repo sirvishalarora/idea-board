@@ -13,16 +13,31 @@ function auth() {
   });
 }
 
+function parseItemType(raw: string | undefined): ItemType {
+  const t = (raw ?? "idea").trim().toLowerCase();
+  return t === "challenge" ? "challenge" : "idea";
+}
+
+function parseItemStatus(raw: string | undefined): ItemStatus {
+  const s = (raw ?? "active").trim().toLowerCase();
+  return s === "hidden" ? "hidden" : "active";
+}
+
+function parseVotes(raw: string | undefined): number {
+  const n = Number(raw ?? 0);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function rowToItem(row: string[]): BoardItem {
   return {
-    id: row[0] ?? "",
-    type: (row[1] ?? "idea") as ItemType,
+    id: (row[0] ?? "").trim(),
+    type: parseItemType(row[1]),
     title: row[2] ?? "",
     details: row[3] ?? "",
     submitterName: row[4] ?? "",
-    votes: Number(row[5] ?? 0),
+    votes: parseVotes(row[5]),
     createdAt: row[6] ?? "",
-    status: (row[7] ?? "active") as ItemStatus,
+    status: parseItemStatus(row[7]),
   };
 }
 

@@ -1,5 +1,6 @@
 import type { BoardItem, CreateItemInput } from "./types";
 import { MockStore } from "./mock-store";
+import { SheetsStore } from "./sheets-store";
 
 export interface BoardStore {
   listActive(): Promise<BoardItem[]>;
@@ -21,7 +22,6 @@ export function sheetsConfigured(): boolean {
 
 export function getStore(): BoardStore {
   if (sheetsConfigured()) {
-    const { SheetsStore } = require("./sheets-store") as typeof import("./sheets-store");
     return new SheetsStore();
   }
   return new MockStore();

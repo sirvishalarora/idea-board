@@ -31,7 +31,7 @@ export default function PhoneHome() {
   return (
     <main className="mx-auto max-w-lg space-y-4 p-4 pb-24">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Office Board</h1>
+        <h1 className="text-2xl font-bold">Office Ideas Board</h1>
         <Link href="/new" className={cn(buttonVariants())}>
           Add
         </Link>

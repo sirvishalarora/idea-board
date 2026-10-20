@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
-export function QrPanel({ url }: { url: string }) {
+export function QrPanel({ url }: { url?: string }) {
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    QRCode.toDataURL(url, { width: 280, margin: 1 }).then(setSrc);
+    const target =
+      url ?? process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    QRCode.toDataURL(target, { width: 280, margin: 1 }).then(setSrc);
   }, [url]);
 
   return (

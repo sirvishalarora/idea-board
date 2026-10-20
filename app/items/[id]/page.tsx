@@ -8,5 +8,5 @@ export default async function ItemDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <ItemDetailClient id={id} />;
+  return <ItemDetailClient key={id} id={id} />;
 }

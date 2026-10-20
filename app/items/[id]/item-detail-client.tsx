@@ -13,15 +13,21 @@ export function ItemDetailClient({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setItem(null);
-    setError(null);
+    let cancelled = false;
     fetch(`/api/items/${id}`)
       .then((r) => {
         if (!r.ok) throw new Error("not found");
         return r.json();
       })
-      .then((d) => setItem(d.item))
-      .catch(() => setError("Could not load this item."));
+      .then((d) => {
+        if (!cancelled) setItem(d.item);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Could not load this item.");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (error) {
