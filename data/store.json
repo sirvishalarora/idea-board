@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "seed-idea-1",
+      "type": "idea",
+      "title": "Quiet focus hours",
+      "details": "Block 9–11am twice a week for deep work with no meetings.",
+      "submitterName": "Sam Rivera",
+      "votes": 3,
+      "createdAt": "2026-10-01T10:00:00.000Z",
+      "status": "active"
+    },
+    {
+      "id": "seed-challenge-1",
+      "type": "challenge",
+      "title": "Onboarding takes too long",
+      "details": "New hires wait days for accounts. How do we cut that to one day?",
+      "submitterName": "Jordan Lee",
+      "votes": 5,
+      "createdAt": "2026-10-02T10:00:00.000Z",
+      "status": "active"
+    }
+  ],
+  "voteReceipts": []
+}
