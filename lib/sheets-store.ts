@@ -46,14 +46,23 @@ export class SheetsStore implements BoardStore {
     return google.sheets({ version: "v4", auth: auth() });
   }
 
-  private async readItems(): Promise<BoardItem[]> {
+  private async readItemRows(): Promise<
+    { item: BoardItem; sheetRow: number }[]
+  > {
     const api = await this.sheets();
     const res = await api.spreadsheets.values.get({
       spreadsheetId: this.sheetId,
       range: "items!A2:H",
     });
     const rows = (res.data.values ?? []) as string[][];
-    return rows.filter((r) => r[0]).map(rowToItem);
+    return rows
+      .map((row, i) => ({ row, sheetRow: i + 2 }))
+      .filter(({ row }) => row[0])
+      .map(({ row, sheetRow }) => ({ item: rowToItem(row), sheetRow }));
+  }
+
+  private async readItems(): Promise<BoardItem[]> {
+    return (await this.readItemRows()).map(({ item }) => item);
   }
 
   private async readVoteReceipts(): Promise<{ itemId: string; voterToken: string }[]> {
@@ -107,12 +116,12 @@ export class SheetsStore implements BoardStore {
     id: string,
     voterToken: string
   ): Promise<{ item: BoardItem; alreadyVoted: boolean }> {
-    const items = await this.readItems();
-    const rowIndex = items.findIndex((i) => i.id === id);
-    if (rowIndex === -1 || items[rowIndex].status !== "active") {
+    const itemRows = await this.readItemRows();
+    const match = itemRows.find(({ item }) => item.id === id);
+    if (!match || match.item.status !== "active") {
       throw new Error("ITEM_NOT_FOUND");
     }
-    const item = items[rowIndex];
+    const { item, sheetRow } = match;
 
     const receipts = await this.readVoteReceipts();
     const exists = receipts.some(
@@ -131,7 +140,6 @@ export class SheetsStore implements BoardStore {
       requestBody: { values: [[id, voterToken, createdAt]] },
     });
 
-    const sheetRow = rowIndex + 2;
     const newVotes = item.votes + 1;
     await api.spreadsheets.values.update({
       spreadsheetId: this.sheetId,
