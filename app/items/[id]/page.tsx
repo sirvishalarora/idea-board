@@ -1,6 +1,7 @@
+import { getStore } from "@/lib/store";
 import { ItemDetailClient } from "./item-detail-client";
 
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 export default async function ItemDetailPage({
   params,
@@ -8,5 +9,8 @@ export default async function ItemDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <ItemDetailClient key={id} id={id} />;
+  const item = await getStore().getById(id);
+  const active = item && item.status === "active" ? item : null;
+
+  return <ItemDetailClient id={id} initialItem={active} />;
 }

@@ -1,31 +1,23 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ItemCard } from "@/components/item-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
+import { getStore } from "@/lib/store";
 import type { BoardItem } from "@/lib/types";
 
-export default function PhoneHome() {
-  const [items, setItems] = useState<BoardItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export const dynamic = "force-dynamic";
 
-  useEffect(() => {
-    fetch("/api/items")
-      .then((r) => {
-        if (!r.ok) throw new Error("failed");
-        return r.json();
-      })
-      .then((d) => setItems(d.items ?? []))
-      .catch(() => setError("Could not load the board."));
-  }, []);
+export default async function PhoneHome() {
+  let items: BoardItem[] = [];
+  let error: string | null = null;
+  try {
+    items = await getStore().listActive();
+  } catch {
+    error = "Could not load the board.";
+  }
 
   if (error) {
     return <main className="mx-auto max-w-lg p-4">{error}</main>;
-  }
-  if (!items) {
-    return <main className="mx-auto max-w-lg p-4">Loading…</main>;
   }
 
   return (

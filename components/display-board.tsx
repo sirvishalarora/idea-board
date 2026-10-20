@@ -55,11 +55,14 @@ function DisplayColumn({
   );
 }
 
-export function DisplayBoard() {
-  const [items, setItems] = useState<BoardItem[]>([]);
-  const lastGoodRef = useRef<BoardItem[]>([]);
+export function DisplayBoard({
+  initialItems,
+}: {
+  initialItems: BoardItem[];
+}) {
+  const [items, setItems] = useState<BoardItem[]>(initialItems);
+  const lastGoodRef = useRef<BoardItem[]>(initialItems);
   const [offline, setOffline] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,12 +81,9 @@ export function DisplayBoard() {
         if (cancelled) return;
         setItems(lastGoodRef.current);
         setOffline(true);
-      } finally {
-        if (!cancelled) setInitialLoad(false);
       }
     }
 
-    void load();
     const id = setInterval(() => void load(), POLL_MS);
     return () => {
       cancelled = true;
@@ -109,22 +109,18 @@ export function DisplayBoard() {
         </div>
       )}
 
-      {initialLoad && items.length === 0 && !offline ? (
-        <p className="text-xl text-slate-400">Loading…</p>
-      ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-2 gap-10">
-          <DisplayColumn
-            title="Ideas"
-            items={ideas}
-            emptyCopy="No ideas yet — scan the QR to add one"
-          />
-          <DisplayColumn
-            title="Challenges"
-            items={challenges}
-            emptyCopy="No challenges yet — scan the QR to add one"
-          />
-        </div>
-      )}
+      <div className="grid min-h-0 flex-1 grid-cols-2 gap-10">
+        <DisplayColumn
+          title="Ideas"
+          items={ideas}
+          emptyCopy="No ideas yet — scan the QR to add one"
+        />
+        <DisplayColumn
+          title="Challenges"
+          items={challenges}
+          emptyCopy="No challenges yet — scan the QR to add one"
+        />
+      </div>
     </main>
   );
 }
