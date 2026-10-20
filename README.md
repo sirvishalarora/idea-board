@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Office Ideas Board
 
-## Getting Started
+A shared office ideas and challenges board: a **TV display** shows live vote counts (no submitter names), phones scan a **QR code** to browse, upvote, and submit new items. Data lives in **Google Sheets** in production, or a local JSON file in **mock mode** when Google credentials are not set.
 
-First, run the development server:
+## Quick start (mock mode)
+
+No Google setup required — the app uses a local JSON store under `data/store.json`.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://127.0.0.1:3456](http://127.0.0.1:3456) on a phone browser, or [http://127.0.0.1:3456/display](http://127.0.0.1:3456/display) on the office TV.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Run tests:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+## Google Sheets setup
 
-To learn more about Next.js, take a look at the following resources:
+When all three Google env vars are set, the app uses Google Sheets as the source of truth instead of the mock store.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. Create a spreadsheet
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create a Google Sheet with **two tabs**:
 
-## Deploy on Vercel
+**Tab `items`** — header row (row 1) exactly:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+id,type,title,details,submitter_name,votes,created_at,status
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Tab `vote_receipts`** — header row (row 1) exactly:
+
+```
+item_id,voter_token,created_at
+```
+
+You can add rows manually in the sheet or via the app’s submit form; the API appends new items.
+
+### 2. Google Cloud service account
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create or select a project.
+2. Enable the **Google Sheets API**.
+3. Create a **service account** and download its JSON key.
+4. From the key file, copy `client_email` and `private_key`.
+
+### 3. Share the sheet
+
+Share the spreadsheet with the service account email (from the JSON `client_email`) as **Editor**.
+
+### 4. Environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_SHEET_ID` | Spreadsheet ID from the sheet URL |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Service account `client_email` |
+| `GOOGLE_PRIVATE_KEY` | Service account `private_key` (keep quotes; `\n` newlines are fine) |
+| `NEXT_PUBLIC_APP_URL` | Public URL phones use to open the app (required for the QR code in production) |
+
+Example for local dev:
+
+```
+NEXT_PUBLIC_APP_URL=http://127.0.0.1:3456
+```
+
+Restart the dev server after changing env vars.
+
+## Office TV setup
+
+1. Deploy or run the app on a machine reachable on your network (or the internet).
+2. Set `NEXT_PUBLIC_APP_URL` to the URL employees will use on their phones.
+3. On the TV browser, open `/display` (e.g. `https://your-host/display`) and go **fullscreen**.
+4. The board refreshes about every 15 seconds; the side panel shows a QR code linking to the phone UI.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server on port **3456** |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm test` | Run Vitest tests |
